@@ -10,6 +10,8 @@ Instructions -
 
 
 Pending: 
+Display instructions in game for few seconds or in a corner. 
+Implement button for smartphones. (device-width<x pixels use buttons)
 Optimising
 Better Design and Graphics
 
