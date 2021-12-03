@@ -1,4 +1,6 @@
 # bounce
+Tried the MDN DOCS JS project!
+
 Maneuver the 'Eater' to consume all the balls.
 
 Instructions - 
