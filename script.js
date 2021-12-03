@@ -15,27 +15,50 @@ function random(min, max) {
 
 
 
+
+// Modelling a Shape constructor to be inherited by Ball and EvilBall
+function Shape(x, y, velX, velY, exists){
+  this.x = x;             // x coordinate
+  this.y = y;             // y coordinate
+  this.velX = velX;       // x velocity
+  this.velY = velY;       // y velocity
+  this.exists = exists;   // exists true or false
+}
+// Adding methods to constructor using prototype
+// Drawing the ball on the screen
+Shape.prototype.draw = function(){
+  // to state we want to draw a shape on ctx(paper)
+ ctx.beginPath(); 
+ // color of shape                                   
+ ctx.fillStyle = this.color;     
+ // we pass x,y and size. last two parameters specify the start and end numberof degrees around circle that the arc is drawn. here it is 0 and 360 ie 2PI.                     
+ ctx.arc(this.x, this.y, this.size, 0, 2*Math.PI);    
+ // fill the area with color we specified using fillStyle
+ ctx.fill();
+}
+
+
+
+
+
+
 //Modelling a ball constructor since the object balls will all have these properties
-function Ball(x, y, velX, velY, color, size){
-    this.x = x;
-    this.y = y;
-    this.velX = velX;
-    this.velY = velY;
+function Ball(x, y, velX, velY, color, size, exists){
+    Shape.call(this, x, y, velX, velY, exists);
     this.color = color;
     this.size = size;
 }
-// Adding methods to constructor using prototype
-//drawing the ball on the screen
-Ball.prototype.draw = function(){
-     // to state we want to draw a shape on ctx(paper)
-    ctx.beginPath(); 
-    // color of shape                                   
-    ctx.fillStyle = this.color;     
-    // we pass x,y and size. last two parameters specify the start and end numberof degrees around circle that the arc is drawn. here it is 0 and 360 ie 2PI.                     
-    ctx.arc(this.x, this.y, this.size, 0, 2*Math.PI);    
-    // fill the area with color we specified using fillStyle
-    ctx.fill();
-}
+// Inheriting Shape's methods to Ball. Won't need this if inheriting only proprties of Shape and not the methods. 
+Ball.prototype=Object.create(Shape.prototype);
+// But now Ball.prototype.constructor=Shape() instead of Ball(). To correct this-
+Object.defineProperty(Ball.prototype, 'constructor',
+  {
+    value: Ball,
+    enumerable: false,
+    writable: true
+  }
+);
+// Now adding more methods to Ball.prototype
 // updating ball's path when it touhces the canvas(screen) sides
 // remember x, y are center coordinates of ball, and canvas(0,0) is at top left corner.
 Ball.prototype.update = function() {
@@ -64,7 +87,7 @@ Ball.prototype.update = function() {
 Ball.prototype.collisionDetect = function(){
     for(let i=0; i<balls.length; i++){
         //if they are not the same balls
-        if(!(this === balls[i])){
+        if(!(this === balls[i]) && balls[i].exists){
             const dx = this.x - balls[i].x;      // why const? why not let?
             const dy = this.y - balls[i].y;
             const distance = Math.sqrt(dx*dx+dy*dy);
@@ -87,12 +110,13 @@ while(balls.length<10){ // creating 10 balls
         let size = random(10, 20); //declaring size before as we use it in placing the ball (x,y cooridinates below)
 
         let ball = new Ball(
-             random(size, width-size),
-             random(size, height-size),
-             random(-10,10),
-             random(-10,10),
-             'rgb('+random(0, 255)+','+random(0, 255)+','+random(0, 255)+')',
-             size);
+             random(size, width-size),                                             // x coordinate
+             random(size, height-size),                                            // y coordinate
+             random(-10,10),                                                       // velX
+             random(-10,10),                                                       // velY
+             'rgb('+random(0, 255)+','+random(0, 255)+','+random(0, 255)+')',      // color
+             size,                                                                 // size
+             true);                                                                // exists=true
         balls.push(ball);
 }
 // Animation loop
@@ -112,4 +136,3 @@ function loop() {
 }
 // calling the func to get the loop started
 loop();
-
